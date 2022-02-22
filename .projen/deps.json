@@ -84,7 +84,17 @@
       "type": "build"
     },
     {
+      "name": "@aws-cdk/aws-dynamodb",
+      "version": "^1.145.0",
+      "type": "peer"
+    },
+    {
       "name": "@aws-cdk/core",
+      "version": "^1.145.0",
+      "type": "peer"
+    },
+    {
+      "name": "@aws-cdk/custom-resources",
       "version": "^1.145.0",
       "type": "peer"
     },
@@ -94,7 +104,17 @@
       "type": "peer"
     },
     {
+      "name": "@aws-cdk/aws-dynamodb",
+      "version": "^1.145.0",
+      "type": "runtime"
+    },
+    {
       "name": "@aws-cdk/core",
+      "version": "^1.145.0",
+      "type": "runtime"
+    },
+    {
+      "name": "@aws-cdk/custom-resources",
       "version": "^1.145.0",
       "type": "runtime"
     },

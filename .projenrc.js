@@ -7,7 +7,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
   name: 'aws-dynamodb-multi-gsis',
   repositoryUrl: 'https://github.com/flochaz/aws-dynamodb-multi-gsis.git',
 
-  // cdkDependencies: undefined,      /* Which AWS CDK modules (those that start with "@aws-cdk/") does this library require when consumed? */
+  cdkDependencies: ['@aws-cdk/aws-dynamodb', '@aws-cdk/custom-resources'],
   // cdkTestDependencies: undefined,  /* AWS CDK modules required for testing. */
   // deps: [],                        /* Runtime dependencies of this module. */
   // description: undefined,          /* The description is just a string that helps people understand the purpose of the package. */
