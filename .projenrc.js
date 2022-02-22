@@ -14,5 +14,8 @@ const project = new awscdk.AwsCdkConstructLibrary({
   devDeps: ['aws-sdk', '@types/aws-lambda'],
   // packageName: undefined,          /* The "name" in package.json. */
   // release: undefined,              /* Add release management to this project. */
+  gitignore: [
+    'cdk.out',
+  ],
 });
 project.synth();

@@ -145,7 +145,7 @@ export class Table extends dynamodb.Table {
 
     console.log(`Adding global secondary index ${globalSecondaryIndex.indexName} and ${JSON.stringify(globalSecondaryIndex.keySchema)} schema`);
     // capitalize object keys
-    const capitalizedAttributeDefinition = this._attributeDefinitions.map((def) => {
+    const capitalizedAttributeDefinitions = this._attributeDefinitions.map((def) => {
       return {
         AttributeName: def.attributeName,
         AttributeType: def.attributeType,
@@ -170,7 +170,7 @@ export class Table extends dynamodb.Table {
         resourceType: 'Custom::DynamoDBGlobalSecondaryIndex',
         properties: {
           TableName: this.tableName,
-          AttributeDefinitions: capitalizedAttributeDefinition,
+          AttributeDefinitions: capitalizedAttributeDefinitions,
           IndexName: globalSecondaryIndex.indexName,
           KeySchema: capitalizedKeySchema,
           Projection: capitalizedProjection,

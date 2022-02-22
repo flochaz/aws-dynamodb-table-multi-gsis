@@ -6,7 +6,7 @@ import type {
 import { DynamoDB } from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
 
 export async function handler(event: any): Promise<any> {
-  if (event.Data) {
+  if (event.data) {
     return isCompleteHandler(event);
   } else {
     return onEventHandler(event);
@@ -19,32 +19,28 @@ export async function onEventHandler(event: any): Promise<any> {
   const dynamodb = new DynamoDB();
 
   const tableName = event.ResourceProperties.TableName;
-  const capitalizedAttributeDefinition = event.ResourceProperties.AttributeDefinition;
+  const capitalizedAttributeDefinitions = event.ResourceProperties.AttributeDefinitions;
   const capitalizedKeySchema = event.ResourceProperties.KeySchema;
   const indexName = event.ResourceProperties.IndexName;
   const capitalizedProjection = event.ResourceProperties.Projection;
   let updateTableAction: 'Create' | 'Update' | 'Delete';
   updateTableAction = event.RequestType;
-  await dynamodb
-    .updateTable({
-      TableName: tableName,
-      AttributeDefinitions: capitalizedAttributeDefinition,
-    })
-    .promise();
-  const data = await dynamodb
-    .updateTable({
-      TableName: tableName,
-      AttributeDefinitions: capitalizedAttributeDefinition,
-      GlobalSecondaryIndexUpdates: [
-        {
-          [updateTableAction]: {
-            IndexName: indexName,
-            KeySchema: updateTableAction != 'Delete' ? capitalizedKeySchema : undefined,
-            Projection: updateTableAction != 'Delete' ? capitalizedProjection : undefined,
-          },
+  const params: DynamoDB.UpdateTableInput = {
+    TableName: tableName,
+    AttributeDefinitions: capitalizedAttributeDefinitions,
+    GlobalSecondaryIndexUpdates: [
+      {
+        [updateTableAction]: {
+          IndexName: indexName,
+          KeySchema: updateTableAction != 'Delete' ? capitalizedKeySchema : undefined,
+          Projection: updateTableAction != 'Delete' ? capitalizedProjection : undefined,
         },
-      ],
-    })
+      },
+    ],
+  };
+  console.log(`Updating table ${tableName} with params ${JSON.stringify(params)}`);
+  const data = await dynamodb
+    .updateTable(params)
     .promise();
   console.log('Update table: %j', data);
 
