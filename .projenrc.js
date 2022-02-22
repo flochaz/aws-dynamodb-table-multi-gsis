@@ -1,11 +1,11 @@
-const { AwsCdkConstructLibrary } = require('projen');
-const project = new AwsCdkConstructLibrary({
+const { awscdk } = require('projen');
+const project = new awscdk.AwsCdkConstructLibrary({
   author: 'Florian CHAZAL',
   authorAddress: 'florianchazal@gmail.com',
-  cdkVersion: '1.95.2',
+  cdkVersion: '1.145.0',
   defaultReleaseBranch: 'main',
-  name: 'GSI',
-  repositoryUrl: 'https://github.com/florianchazal/GSI.git',
+  name: 'aws-dynamodb-multi-gsis',
+  repositoryUrl: 'https://github.com/flochaz/aws-dynamodb-multi-gsis.git',
 
   // cdkDependencies: undefined,      /* Which AWS CDK modules (those that start with "@aws-cdk/") does this library require when consumed? */
   // cdkTestDependencies: undefined,  /* AWS CDK modules required for testing. */
