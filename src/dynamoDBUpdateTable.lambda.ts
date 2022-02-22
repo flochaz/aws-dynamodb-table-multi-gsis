@@ -44,9 +44,7 @@ export async function onEventHandler(event: any): Promise<any> {
     .promise();
   console.log('Update table: %j', data);
 
-  return event.RequestType === 'Create' || event.RequestType === 'Update'
-    ? { PhysicalResourceId: `${indexName}`, data: { fwdToIsComplete: true } }
-    : {};
+  return { PhysicalResourceId: `${indexName}`, data: { fwdToIsComplete: true } };
 }
 
 export async function isCompleteHandler(event: IsCompleteRequest): Promise<IsCompleteResponse> {
