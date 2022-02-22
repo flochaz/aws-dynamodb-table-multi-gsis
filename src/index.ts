@@ -1,9 +1,8 @@
 import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import { ScalableTableAttribute } from '@aws-cdk/aws-dynamodb/lib/scalable-table-attribute';
 import * as core from '@aws-cdk/core';
+import { DynamoDBUpdateTableProvider } from './DynamoDBUpdateTableProvider';
 
-// https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html#limits-secondary-indexes
-const MAX_LOCAL_SECONDARY_INDEX_COUNT = 5;
 
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
@@ -18,17 +17,25 @@ interface ScalableAttributePair {
 
 export class Table extends dynamodb.Table {
   private readonly _attributeDefinitions = new Array<dynamodb.CfnTable.AttributeDefinitionProperty>();
-  private readonly _globalSecondaryIndexes = new Array<dynamodb.CfnTable.GlobalSecondaryIndexProperty>();
-  private readonly _localSecondaryIndexes = new Array<dynamodb.CfnTable.LocalSecondaryIndexProperty>();
+  private readonly globalSecondaryIndexesBuilders = new Array<core.CustomResource>();
+  private readonly globalSecondaryIndexesBuilderProvider: DynamoDBUpdateTableProvider;
 
-  private readonly _secondaryIndexSchemas = new Map<string, dynamodb.SchemaOptions>();
+  private readonly _globalSecondaryIndexSchemas = new Map<string, dynamodb.SchemaOptions>();
   private readonly _nonKeyAttributes = new Set<string>();
-  private readonly _tablePartitionKey: dynamodb.Attribute;
   private readonly _indexScaling = new Map<string, ScalableAttributePair>();
   private readonly _billingMode: dynamodb.BillingMode;
 
   constructor(scope: core.Construct, id: string, props: dynamodb.TableProps) {
     super(scope, id, props);
+
+    // Keep original billing mode logic
+    if (props.replicationRegions) {
+      this._billingMode = props.billingMode ?? dynamodb.BillingMode.PAY_PER_REQUEST;
+    } else {
+      this._billingMode = props.billingMode ?? dynamodb.BillingMode.PROVISIONED;
+    }
+
+    this.globalSecondaryIndexesBuilderProvider = DynamoDBUpdateTableProvider.getOrCreate(scope);
   }
 
   /**
@@ -93,10 +100,10 @@ export class Table extends dynamodb.Table {
   /**
    * Validate index name to check if a duplicate name already exists.
    *
-   * @param indexName a name of global or local secondary index
+   * @param indexName a name of global secondary index
    */
   private _validateIndexName(indexName: string) {
-    if (this._secondaryIndexSchemas.has(indexName)) {
+    if (this._globalSecondaryIndexSchemas.has(indexName)) {
       // a duplicate index name causes validation exception, status code 400, while trying to create CFN stack
       throw new Error(`a duplicate index name, ${indexName}, is not allowed`);
     }
@@ -120,35 +127,6 @@ export class Table extends dynamodb.Table {
   }
 
   /**
-   * Add a local secondary index of table.
-   *
-   * @param props the property of local secondary index
-   */
-  public addLocalSecondaryIndex(props: dynamodb.LocalSecondaryIndexProps) {
-    // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html#limits-secondary-indexes
-    if (this._localSecondaryIndexes.length >= MAX_LOCAL_SECONDARY_INDEX_COUNT) {
-      throw new RangeError(`a maximum number of local secondary index per table is ${MAX_LOCAL_SECONDARY_INDEX_COUNT}`);
-    }
-
-    this._validateIndexName(props.indexName);
-
-    // build key schema and projection for index
-    const lsiKeySchema = this._buildIndexKeySchema(this._tablePartitionKey, props.sortKey);
-    const lsiProjection = this._buildIndexProjection(props);
-
-    this._localSecondaryIndexes.push({
-      indexName: props.indexName,
-      keySchema: lsiKeySchema,
-      projection: lsiProjection,
-    });
-
-    this._secondaryIndexSchemas.set(props.indexName, {
-      partitionKey: this._tablePartitionKey,
-      sortKey: props.sortKey,
-    });
-  }
-
-  /**
    * Validate read and write capacity are not specified for on-demand tables (billing mode PAY_PER_REQUEST).
    *
    * @param props read and write capacity properties
@@ -159,6 +137,45 @@ export class Table extends dynamodb.Table {
         throw new Error('you cannot provision read and write capacity for a table with PAY_PER_REQUEST billing mode');
       }
     }
+  }
+
+  private sdkBasedAddGlobalSecondaryIndex(
+    globalSecondaryIndex: dynamodb.CfnTable.LocalSecondaryIndexProperty | dynamodb.CfnTable.GlobalSecondaryIndexProperty,
+  ): core.CustomResource {
+
+    console.log(`Adding global secondary index ${globalSecondaryIndex.indexName} and ${JSON.stringify(globalSecondaryIndex.keySchema)} schema`);
+    // capitalize object keys
+    const capitalizedAttributeDefinition = this._attributeDefinitions.map((def) => {
+      return {
+        AttributeName: def.attributeName,
+        AttributeType: def.attributeType,
+      };
+    });
+
+    const capitalizedKeySchema = (globalSecondaryIndex.keySchema as dynamodb.CfnTable.KeySchemaProperty[]).map((key) => {
+      return {
+        AttributeName: key.attributeName,
+        KeyType: key.keyType,
+      };
+    });
+
+    const capitalizedProjection = {
+      ProjectionType: (globalSecondaryIndex.projection as dynamodb.CfnTable.ProjectionProperty).projectionType,
+    };
+    return new core.CustomResource(
+      this,
+      `${globalSecondaryIndex.indexName}`,
+      {
+        serviceToken: this.globalSecondaryIndexesBuilderProvider.provider.serviceToken,
+        resourceType: 'Custom::DynamoDBGlobalSecondaryIndex',
+        properties: {
+          TableName: this.tableName,
+          AttributeDefinitions: capitalizedAttributeDefinition,
+          IndexName: globalSecondaryIndex.indexName,
+          KeySchema: capitalizedKeySchema,
+          Projection: capitalizedProjection,
+        },
+      });
   }
 
   /**
@@ -174,7 +191,7 @@ export class Table extends dynamodb.Table {
     const gsiKeySchema = this._buildIndexKeySchema(props.partitionKey, props.sortKey);
     const gsiProjection = this._buildIndexProjection(props);
 
-    this._globalSecondaryIndexes.push({
+    const builder = this.sdkBasedAddGlobalSecondaryIndex({
       indexName: props.indexName,
       keySchema: gsiKeySchema,
       projection: gsiProjection,
@@ -186,41 +203,17 @@ export class Table extends dynamodb.Table {
             writeCapacityUnits: props.writeCapacity || 5,
           },
     });
+    if (this.globalSecondaryIndexesBuilders.length !== 0) {
+      builder.node.addDependency(this.globalSecondaryIndexesBuilders[this.globalSecondaryIndexesBuilders.length - 1]);
+    }
 
-    this._secondaryIndexSchemas.set(props.indexName, {
+    this.globalSecondaryIndexesBuilders.push(builder);
+
+    this._globalSecondaryIndexSchemas.set(props.indexName, {
       partitionKey: props.partitionKey,
       sortKey: props.sortKey,
     });
 
     this._indexScaling.set(props.indexName, {});
-  }
-
-  /**
-   * Add a local secondary index of table.
-   *
-   * @param props the property of local secondary index
-   */
-  public _addLocalSecondaryIndex(props: dynamodb.LocalSecondaryIndexProps) {
-    // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html#limits-secondary-indexes
-    if (this._localSecondaryIndexes.length >= MAX_LOCAL_SECONDARY_INDEX_COUNT) {
-      throw new RangeError(`a maximum number of local secondary index per table is ${MAX_LOCAL_SECONDARY_INDEX_COUNT}`);
-    }
-
-    this._validateIndexName(props.indexName);
-
-    // build key schema and projection for index
-    const lsiKeySchema = this._buildIndexKeySchema(this._tablePartitionKey, props.sortKey);
-    const lsiProjection = this._buildIndexProjection(props);
-
-    this._localSecondaryIndexes.push({
-      indexName: props.indexName,
-      keySchema: lsiKeySchema,
-      projection: lsiProjection,
-    });
-
-    this._secondaryIndexSchemas.set(props.indexName, {
-      partitionKey: this._tablePartitionKey,
-      sortKey: props.sortKey,
-    });
   }
 }

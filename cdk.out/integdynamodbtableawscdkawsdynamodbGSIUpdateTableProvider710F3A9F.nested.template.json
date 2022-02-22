@@ -1,0 +1,856 @@
+{
+  "Resources": {
+    "DynamoDBTableUpdateServiceRoleEBCEBC02": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "integ-dynamodb-table/@aws-cdk--aws-dynamodb.GSIUpdateTableProvider/DynamoDBTableUpdate/ServiceRole/Resource"
+      }
+    },
+    "DynamoDBTableUpdate7A5EA38B": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "referencetointegdynamodbtableAssetParameters4b464a31b8941e2b5b425190e1340a8ae5964f45854e5c8fd0851a068950fb15S3Bucket5CCFEB39Ref"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "referencetointegdynamodbtableAssetParameters4b464a31b8941e2b5b425190e1340a8ae5964f45854e5c8fd0851a068950fb15S3VersionKeyA9C3B83FRef"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "referencetointegdynamodbtableAssetParameters4b464a31b8941e2b5b425190e1340a8ae5964f45854e5c8fd0851a068950fb15S3VersionKeyA9C3B83FRef"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "DynamoDBTableUpdateServiceRoleEBCEBC02",
+            "Arn"
+          ]
+        },
+        "Description": "src/dynamoDBUpdateTable.lambda.ts",
+        "Environment": {
+          "Variables": {
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+          }
+        },
+        "Handler": "index.handler",
+        "Runtime": "nodejs14.x"
+      },
+      "DependsOn": [
+        "DynamoDBTableUpdateServiceRoleEBCEBC02"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "integ-dynamodb-table/@aws-cdk--aws-dynamodb.GSIUpdateTableProvider/DynamoDBTableUpdate/Resource",
+        "aws:asset:path": "asset.4b464a31b8941e2b5b425190e1340a8ae5964f45854e5c8fd0851a068950fb15.lambda",
+        "aws:asset:is-bundled": false,
+        "aws:asset:property": "Code"
+      }
+    },
+    "id4D1900E5": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          },
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/AmazonDynamoDBFullAccess"
+              ]
+            ]
+          }
+        ],
+        "RoleName": "id"
+      },
+      "Metadata": {
+        "aws:cdk:path": "integ-dynamodb-table/@aws-cdk--aws-dynamodb.GSIUpdateTableProvider/id/Resource"
+      }
+    },
+    "idDefaultPolicyF57C41F2": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "DynamoDBTableUpdate7A5EA38B",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "states:StartExecution",
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "MyProviderwaiterstatemachineC1FBB9F9"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "idDefaultPolicyF57C41F2",
+        "Roles": [
+          {
+            "Ref": "id4D1900E5"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "integ-dynamodb-table/@aws-cdk--aws-dynamodb.GSIUpdateTableProvider/id/DefaultPolicy/Resource"
+      }
+    },
+    "MyProviderframeworkonEvent9AF5C387": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "referencetointegdynamodbtableAssetParameters7ef22dac3421fb2d25175b3386053dbc5bdc110e87cbd58600263bf70a6324cdS3Bucket14C2493ARef"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "referencetointegdynamodbtableAssetParameters7ef22dac3421fb2d25175b3386053dbc5bdc110e87cbd58600263bf70a6324cdS3VersionKeyF57C5358Ref"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "referencetointegdynamodbtableAssetParameters7ef22dac3421fb2d25175b3386053dbc5bdc110e87cbd58600263bf70a6324cdS3VersionKeyF57C5358Ref"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "id4D1900E5",
+            "Arn"
+          ]
+        },
+        "Description": "AWS CDK resource provider framework - onEvent (integ-dynamodb-table/@aws-cdk--aws-dynamodb.GSIUpdateTableProvider/MyProvider)",
+        "Environment": {
+          "Variables": {
+            "USER_ON_EVENT_FUNCTION_ARN": {
+              "Fn::GetAtt": [
+                "DynamoDBTableUpdate7A5EA38B",
+                "Arn"
+              ]
+            },
+            "USER_IS_COMPLETE_FUNCTION_ARN": {
+              "Fn::GetAtt": [
+                "DynamoDBTableUpdate7A5EA38B",
+                "Arn"
+              ]
+            },
+            "WAITER_STATE_MACHINE_ARN": {
+              "Ref": "MyProviderwaiterstatemachineC1FBB9F9"
+            }
+          }
+        },
+        "Handler": "framework.onEvent",
+        "Runtime": "nodejs12.x",
+        "Timeout": 900
+      },
+      "DependsOn": [
+        "idDefaultPolicyF57C41F2",
+        "id4D1900E5"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "integ-dynamodb-table/@aws-cdk--aws-dynamodb.GSIUpdateTableProvider/MyProvider/framework-onEvent/Resource",
+        "aws:asset:path": "asset.7ef22dac3421fb2d25175b3386053dbc5bdc110e87cbd58600263bf70a6324cd",
+        "aws:asset:is-bundled": false,
+        "aws:asset:property": "Code"
+      }
+    },
+    "MyProviderframeworkisComplete364190E2": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "referencetointegdynamodbtableAssetParameters7ef22dac3421fb2d25175b3386053dbc5bdc110e87cbd58600263bf70a6324cdS3Bucket14C2493ARef"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "referencetointegdynamodbtableAssetParameters7ef22dac3421fb2d25175b3386053dbc5bdc110e87cbd58600263bf70a6324cdS3VersionKeyF57C5358Ref"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "referencetointegdynamodbtableAssetParameters7ef22dac3421fb2d25175b3386053dbc5bdc110e87cbd58600263bf70a6324cdS3VersionKeyF57C5358Ref"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "id4D1900E5",
+            "Arn"
+          ]
+        },
+        "Description": "AWS CDK resource provider framework - isComplete (integ-dynamodb-table/@aws-cdk--aws-dynamodb.GSIUpdateTableProvider/MyProvider)",
+        "Environment": {
+          "Variables": {
+            "USER_ON_EVENT_FUNCTION_ARN": {
+              "Fn::GetAtt": [
+                "DynamoDBTableUpdate7A5EA38B",
+                "Arn"
+              ]
+            },
+            "USER_IS_COMPLETE_FUNCTION_ARN": {
+              "Fn::GetAtt": [
+                "DynamoDBTableUpdate7A5EA38B",
+                "Arn"
+              ]
+            }
+          }
+        },
+        "Handler": "framework.isComplete",
+        "Runtime": "nodejs12.x",
+        "Timeout": 900
+      },
+      "DependsOn": [
+        "idDefaultPolicyF57C41F2",
+        "id4D1900E5"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "integ-dynamodb-table/@aws-cdk--aws-dynamodb.GSIUpdateTableProvider/MyProvider/framework-isComplete/Resource",
+        "aws:asset:path": "asset.7ef22dac3421fb2d25175b3386053dbc5bdc110e87cbd58600263bf70a6324cd",
+        "aws:asset:is-bundled": false,
+        "aws:asset:property": "Code"
+      }
+    },
+    "MyProviderframeworkonTimeoutD9D96588": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "referencetointegdynamodbtableAssetParameters7ef22dac3421fb2d25175b3386053dbc5bdc110e87cbd58600263bf70a6324cdS3Bucket14C2493ARef"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "referencetointegdynamodbtableAssetParameters7ef22dac3421fb2d25175b3386053dbc5bdc110e87cbd58600263bf70a6324cdS3VersionKeyF57C5358Ref"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "referencetointegdynamodbtableAssetParameters7ef22dac3421fb2d25175b3386053dbc5bdc110e87cbd58600263bf70a6324cdS3VersionKeyF57C5358Ref"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "id4D1900E5",
+            "Arn"
+          ]
+        },
+        "Description": "AWS CDK resource provider framework - onTimeout (integ-dynamodb-table/@aws-cdk--aws-dynamodb.GSIUpdateTableProvider/MyProvider)",
+        "Environment": {
+          "Variables": {
+            "USER_ON_EVENT_FUNCTION_ARN": {
+              "Fn::GetAtt": [
+                "DynamoDBTableUpdate7A5EA38B",
+                "Arn"
+              ]
+            },
+            "USER_IS_COMPLETE_FUNCTION_ARN": {
+              "Fn::GetAtt": [
+                "DynamoDBTableUpdate7A5EA38B",
+                "Arn"
+              ]
+            }
+          }
+        },
+        "Handler": "framework.onTimeout",
+        "Runtime": "nodejs12.x",
+        "Timeout": 900
+      },
+      "DependsOn": [
+        "idDefaultPolicyF57C41F2",
+        "id4D1900E5"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "integ-dynamodb-table/@aws-cdk--aws-dynamodb.GSIUpdateTableProvider/MyProvider/framework-onTimeout/Resource",
+        "aws:asset:path": "asset.7ef22dac3421fb2d25175b3386053dbc5bdc110e87cbd58600263bf70a6324cd",
+        "aws:asset:is-bundled": false,
+        "aws:asset:property": "Code"
+      }
+    },
+    "MyProviderwaiterstatemachineRole6453DD81": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::FindInMap": [
+                    "ServiceprincipalMap",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    "states"
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "integ-dynamodb-table/@aws-cdk--aws-dynamodb.GSIUpdateTableProvider/MyProvider/waiter-state-machine/Role/Resource"
+      }
+    },
+    "MyProviderwaiterstatemachineRoleDefaultPolicy5EE07C3D": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "MyProviderframeworkisComplete364190E2",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "MyProviderframeworkonTimeoutD9D96588",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "MyProviderwaiterstatemachineRoleDefaultPolicy5EE07C3D",
+        "Roles": [
+          {
+            "Ref": "MyProviderwaiterstatemachineRole6453DD81"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "integ-dynamodb-table/@aws-cdk--aws-dynamodb.GSIUpdateTableProvider/MyProvider/waiter-state-machine/Role/DefaultPolicy/Resource"
+      }
+    },
+    "MyProviderwaiterstatemachineC1FBB9F9": {
+      "Type": "AWS::StepFunctions::StateMachine",
+      "Properties": {
+        "DefinitionString": {
+          "Fn::Join": [
+            "",
+            [
+              "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":5,\"MaxAttempts\":360,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+              {
+                "Fn::GetAtt": [
+                  "MyProviderframeworkisComplete364190E2",
+                  "Arn"
+                ]
+              },
+              "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+              {
+                "Fn::GetAtt": [
+                  "MyProviderframeworkonTimeoutD9D96588",
+                  "Arn"
+                ]
+              },
+              "\"}}}"
+            ]
+          ]
+        },
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "MyProviderwaiterstatemachineRole6453DD81",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "MyProviderwaiterstatemachineRoleDefaultPolicy5EE07C3D",
+        "MyProviderwaiterstatemachineRole6453DD81"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "integ-dynamodb-table/@aws-cdk--aws-dynamodb.GSIUpdateTableProvider/MyProvider/waiter-state-machine/Resource"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/zWOwW7CMBBEv4W7sxABUo8FJG6tUPgC196iJYkXedcgZPnfG4dymjea0WhaaDdbWC0+7UMa5/tldhwR8jeKoj+rdb3ZiaBOeKFwMQcOojE5NYff0KFwig4rT4EnJQ7VfNnbbWoXU2fzYMcfbyEfU3DvxpuLITtC7niYV2Y98UDuWe2LipF1Y+sLgfnM5GGfXI+6t4LFuCTKYxP/7wicIt/JYywmsEe4yvLebqD9gPXiKkRNTEFpROhe+gdoHBRsBgEAAA=="
+      },
+      "Metadata": {
+        "aws:cdk:path": "integ-dynamodb-table/@aws-cdk--aws-dynamodb.GSIUpdateTableProvider/CDKMetadata/Default"
+      },
+      "Condition": "CDKMetadataAvailable"
+    }
+  },
+  "Conditions": {
+    "CDKMetadataAvailable": {
+      "Fn::Or": [
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "af-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-northwest-1"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "sa-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-2"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-2"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Mappings": {
+    "ServiceprincipalMap": {
+      "af-south-1": {
+        "states": "states.af-south-1.amazonaws.com"
+      },
+      "ap-east-1": {
+        "states": "states.ap-east-1.amazonaws.com"
+      },
+      "ap-northeast-1": {
+        "states": "states.ap-northeast-1.amazonaws.com"
+      },
+      "ap-northeast-2": {
+        "states": "states.ap-northeast-2.amazonaws.com"
+      },
+      "ap-northeast-3": {
+        "states": "states.ap-northeast-3.amazonaws.com"
+      },
+      "ap-south-1": {
+        "states": "states.ap-south-1.amazonaws.com"
+      },
+      "ap-southeast-1": {
+        "states": "states.ap-southeast-1.amazonaws.com"
+      },
+      "ap-southeast-2": {
+        "states": "states.ap-southeast-2.amazonaws.com"
+      },
+      "ap-southeast-3": {
+        "states": "states.ap-southeast-3.amazonaws.com"
+      },
+      "ca-central-1": {
+        "states": "states.ca-central-1.amazonaws.com"
+      },
+      "cn-north-1": {
+        "states": "states.cn-north-1.amazonaws.com"
+      },
+      "cn-northwest-1": {
+        "states": "states.cn-northwest-1.amazonaws.com"
+      },
+      "eu-central-1": {
+        "states": "states.eu-central-1.amazonaws.com"
+      },
+      "eu-north-1": {
+        "states": "states.eu-north-1.amazonaws.com"
+      },
+      "eu-south-1": {
+        "states": "states.eu-south-1.amazonaws.com"
+      },
+      "eu-south-2": {
+        "states": "states.eu-south-2.amazonaws.com"
+      },
+      "eu-west-1": {
+        "states": "states.eu-west-1.amazonaws.com"
+      },
+      "eu-west-2": {
+        "states": "states.eu-west-2.amazonaws.com"
+      },
+      "eu-west-3": {
+        "states": "states.eu-west-3.amazonaws.com"
+      },
+      "me-south-1": {
+        "states": "states.me-south-1.amazonaws.com"
+      },
+      "sa-east-1": {
+        "states": "states.sa-east-1.amazonaws.com"
+      },
+      "us-east-1": {
+        "states": "states.us-east-1.amazonaws.com"
+      },
+      "us-east-2": {
+        "states": "states.us-east-2.amazonaws.com"
+      },
+      "us-gov-east-1": {
+        "states": "states.us-gov-east-1.amazonaws.com"
+      },
+      "us-gov-west-1": {
+        "states": "states.us-gov-west-1.amazonaws.com"
+      },
+      "us-iso-east-1": {
+        "states": "states.amazonaws.com"
+      },
+      "us-iso-west-1": {
+        "states": "states.amazonaws.com"
+      },
+      "us-isob-east-1": {
+        "states": "states.amazonaws.com"
+      },
+      "us-west-1": {
+        "states": "states.us-west-1.amazonaws.com"
+      },
+      "us-west-2": {
+        "states": "states.us-west-2.amazonaws.com"
+      }
+    }
+  },
+  "Outputs": {
+    "integdynamodbtableawscdkawsdynamodbGSIUpdateTableProviderMyProviderframeworkonEventBE9DC3C2Arn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "MyProviderframeworkonEvent9AF5C387",
+          "Arn"
+        ]
+      }
+    }
+  },
+  "Parameters": {
+    "referencetointegdynamodbtableAssetParameters4b464a31b8941e2b5b425190e1340a8ae5964f45854e5c8fd0851a068950fb15S3Bucket5CCFEB39Ref": {
+      "Type": "String"
+    },
+    "referencetointegdynamodbtableAssetParameters4b464a31b8941e2b5b425190e1340a8ae5964f45854e5c8fd0851a068950fb15S3VersionKeyA9C3B83FRef": {
+      "Type": "String"
+    },
+    "referencetointegdynamodbtableAssetParameters7ef22dac3421fb2d25175b3386053dbc5bdc110e87cbd58600263bf70a6324cdS3Bucket14C2493ARef": {
+      "Type": "String"
+    },
+    "referencetointegdynamodbtableAssetParameters7ef22dac3421fb2d25175b3386053dbc5bdc110e87cbd58600263bf70a6324cdS3VersionKeyF57C5358Ref": {
+      "Type": "String"
+    }
+  }
+}

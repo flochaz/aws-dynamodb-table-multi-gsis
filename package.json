@@ -7,6 +7,9 @@
   "scripts": {
     "build": "npx projen build",
     "bump": "npx projen bump",
+    "bundle": "npx projen bundle",
+    "bundle:dynamoDBUpdateTable.lambda": "npx projen bundle:dynamoDBUpdateTable.lambda",
+    "bundle:dynamoDBUpdateTable.lambda:watch": "npx projen bundle:dynamoDBUpdateTable.lambda:watch",
     "clobber": "npx projen clobber",
     "compat": "npx projen compat",
     "compile": "npx projen compile",
@@ -38,10 +41,16 @@
   "devDependencies": {
     "@aws-cdk/assert": "^1.145.0",
     "@aws-cdk/assertions": "^1.145.0",
+    "@aws-cdk/aws-applicationautoscaling": "^1.145.0",
+    "@aws-cdk/aws-kinesis": "^1.145.0",
+    "@aws-cdk/aws-kms": "^1.145.0",
+    "@types/aws-lambda": "^8.10.92",
     "@types/jest": "^27.4.0",
     "@types/node": "^12",
     "@typescript-eslint/eslint-plugin": "^5",
     "@typescript-eslint/parser": "^5",
+    "aws-sdk": "^2.1078.0",
+    "esbuild": "^0.14.23",
     "eslint": "^8",
     "eslint-import-resolver-node": "^0.3.6",
     "eslint-import-resolver-typescript": "^2.5.0",
@@ -60,12 +69,16 @@
   },
   "peerDependencies": {
     "@aws-cdk/aws-dynamodb": "^1.145.0",
+    "@aws-cdk/aws-iam": "^1.145.0",
+    "@aws-cdk/aws-lambda": "^1.145.0",
     "@aws-cdk/core": "^1.145.0",
     "@aws-cdk/custom-resources": "^1.145.0",
     "constructs": "^3.2.27"
   },
   "dependencies": {
     "@aws-cdk/aws-dynamodb": "^1.145.0",
+    "@aws-cdk/aws-iam": "^1.145.0",
+    "@aws-cdk/aws-lambda": "^1.145.0",
     "@aws-cdk/core": "^1.145.0",
     "@aws-cdk/custom-resources": "^1.145.0"
   },
