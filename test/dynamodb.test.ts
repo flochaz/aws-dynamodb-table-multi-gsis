@@ -1,4 +1,4 @@
-import { Match, Template } from '@aws-cdk/assertions';
+import { Capture, Match, Template } from '@aws-cdk/assertions';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import {
   Attribute,
@@ -593,6 +593,37 @@ describe('schema details', () => {
       partitionKey: TABLE_PARTITION_KEY,
       sortKey: TABLE_SORT_KEY,
     });
+  });
+
+  test('if adding 2 GSIs,it create 2 custom GSIs builders with the right dependsOn', () => {
+    // WHEN
+    table.addGlobalSecondaryIndex({ indexName: 'GSI1', partitionKey: { name: 'gsi1', type: AttributeType.STRING } });
+    table.addGlobalSecondaryIndex({ indexName: 'GSI2', partitionKey: { name: 'gsi2', type: AttributeType.STRING } });
+
+    const template = Template.fromStack(stack);
+
+    // Test that we got 2 custom GSIs
+    template.resourceCountIs('Custom::DynamoDBGlobalSecondaryIndex', 2);
+
+    // Capture and test the dependency is set properly
+    const dependsOnCapture = new Capture();
+    template.hasResource('Custom::DynamoDBGlobalSecondaryIndex', {
+      DependsOn: [dependsOnCapture],
+    });
+
+    const customDDBGSIs = template.findResources('Custom::DynamoDBGlobalSecondaryIndex');
+    const customDDBGSI1LogicalId = Object.keys(customDDBGSIs)[0];
+
+    expect(dependsOnCapture._captured.length).toBe(1);
+    expect (dependsOnCapture._captured[0]).toBe(customDDBGSI1LogicalId);
+  });
+
+  test('snapshot testing', () => {
+    table.addGlobalSecondaryIndex({ indexName: 'GSI1', partitionKey: { name: 'gsi1', type: AttributeType.STRING } });
+    table.addGlobalSecondaryIndex({ indexName: 'GSI2', partitionKey: { name: 'gsi2', type: AttributeType.STRING } });
+
+    const template = Template.fromStack(stack);
+    expect(template.toJSON()).toMatchSnapshot();
   });
 
   // test('get scheama for GSI with hash key', () => {
@@ -1713,66 +1744,66 @@ describe('grants', () => {
     });
   });
 
-  // test('if table has an index grant gives access to the index', () => {
-  //   // GIVEN
-  //   const stack = new Stack();
+  test('if table has an index grant gives access to the index', () => {
+    // GIVEN
+    const stack = new Stack();
 
-  //   const table = new Table(stack, 'my-table', { partitionKey: { name: 'ID', type: AttributeType.STRING } });
-  //   table.addGlobalSecondaryIndex({ indexName: 'MyIndex', partitionKey: { name: 'Age', type: AttributeType.NUMBER } });
-  //   const user = new iam.User(stack, 'user');
+    const table = new Table(stack, 'my-table', { partitionKey: { name: 'ID', type: AttributeType.STRING } });
+    table.addGlobalSecondaryIndex({ indexName: 'MyIndex', partitionKey: { name: 'Age', type: AttributeType.NUMBER } });
+    const user = new iam.User(stack, 'user');
 
-  //   // WHEN
-  //   table.grantReadData(user);
+    // WHEN
+    table.grantReadData(user);
 
-  //   // THEN
-  //   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-  //     'PolicyDocument': {
-  //       'Statement': [
-  //         {
-  //           'Action': [
-  //             'dynamodb:BatchGetItem',
-  //             'dynamodb:GetRecords',
-  //             'dynamodb:GetShardIterator',
-  //             'dynamodb:Query',
-  //             'dynamodb:GetItem',
-  //             'dynamodb:Scan',
-  //             'dynamodb:ConditionCheckItem',
-  //           ],
-  //           'Effect': 'Allow',
-  //           'Resource': [
-  //             {
-  //               'Fn::GetAtt': [
-  //                 'mytable0324D45C',
-  //                 'Arn',
-  //               ],
-  //             },
-  //             {
-  //               'Fn::Join': [
-  //                 '',
-  //                 [
-  //                   {
-  //                     'Fn::GetAtt': [
-  //                       'mytable0324D45C',
-  //                       'Arn',
-  //                     ],
-  //                   },
-  //                   '/index/*',
-  //                 ],
-  //               ],
-  //             },
-  //           ],
-  //         },
-  //       ],
-  //       'Version': '2012-10-17',
-  //     },
-  //     'PolicyName': 'userDefaultPolicy083DF682',
-  //     'Users': [
-  //       {
-  //         'Ref': 'user2C2B57AE',
-  //       },
-  //     ],
-  //   });
-  // });
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      'PolicyDocument': {
+        'Statement': [
+          {
+            'Action': [
+              'dynamodb:BatchGetItem',
+              'dynamodb:GetRecords',
+              'dynamodb:GetShardIterator',
+              'dynamodb:Query',
+              'dynamodb:GetItem',
+              'dynamodb:Scan',
+              'dynamodb:ConditionCheckItem',
+            ],
+            'Effect': 'Allow',
+            'Resource': [
+              {
+                'Fn::GetAtt': [
+                  'mytable0324D45C',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'mytable0324D45C',
+                        'Arn',
+                      ],
+                    },
+                    '/index/*',
+                  ],
+                ],
+              },
+            ],
+          },
+        ],
+        'Version': '2012-10-17',
+      },
+      'PolicyName': 'userDefaultPolicy083DF682',
+      'Users': [
+        {
+          'Ref': 'user2C2B57AE',
+        },
+      ],
+    });
+  });
 
   test('grant for an imported table', () => {
     // GIVEN
@@ -2214,151 +2245,151 @@ describe('global', () => {
     });
   });
 
-  // test('grantReadData', () => {
-  //   const stack = new Stack();
-  //   const table = new Table(stack, 'Table', {
-  //     partitionKey: {
-  //       name: 'id',
-  //       type: AttributeType.STRING,
-  //     },
-  //     replicationRegions: [
-  //       'eu-west-2',
-  //       'eu-central-1',
-  //     ],
-  //   });
-  //   table.addGlobalSecondaryIndex({
-  //     indexName: 'my-index',
-  //     partitionKey: {
-  //       name: 'key',
-  //       type: AttributeType.STRING,
-  //     },
-  //   });
-  //   const user = new iam.User(stack, 'User');
+  test('grantReadData', () => {
+    const stack = new Stack();
+    const table = new Table(stack, 'Table', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+      replicationRegions: [
+        'eu-west-2',
+        'eu-central-1',
+      ],
+    });
+    table.addGlobalSecondaryIndex({
+      indexName: 'my-index',
+      partitionKey: {
+        name: 'key',
+        type: AttributeType.STRING,
+      },
+    });
+    const user = new iam.User(stack, 'User');
 
-  //   // WHEN
-  //   table.grantReadData(user);
+    // WHEN
+    table.grantReadData(user);
 
-  //   // THEN
-  //   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-  //     PolicyDocument: {
-  //       Statement: [
-  //         {
-  //           Action: [
-  //             'dynamodb:BatchGetItem',
-  //             'dynamodb:GetRecords',
-  //             'dynamodb:GetShardIterator',
-  //             'dynamodb:Query',
-  //             'dynamodb:GetItem',
-  //             'dynamodb:Scan',
-  //             'dynamodb:ConditionCheckItem',
-  //           ],
-  //           Effect: 'Allow',
-  //           Resource: [
-  //             {
-  //               'Fn::GetAtt': [
-  //                 'TableCD117FA1',
-  //                 'Arn',
-  //               ],
-  //             },
-  //             {
-  //               'Fn::Join': [
-  //                 '',
-  //                 [
-  //                   {
-  //                     'Fn::GetAtt': [
-  //                       'TableCD117FA1',
-  //                       'Arn',
-  //                     ],
-  //                   },
-  //                   '/index/*',
-  //                 ],
-  //               ],
-  //             },
-  //             {
-  //               'Fn::Join': [
-  //                 '',
-  //                 [
-  //                   'arn:',
-  //                   {
-  //                     Ref: 'AWS::Partition',
-  //                   },
-  //                   ':dynamodb:eu-west-2:',
-  //                   {
-  //                     Ref: 'AWS::AccountId',
-  //                   },
-  //                   ':table/',
-  //                   {
-  //                     Ref: 'TableCD117FA1',
-  //                   },
-  //                 ],
-  //               ],
-  //             },
-  //             {
-  //               'Fn::Join': [
-  //                 '',
-  //                 [
-  //                   'arn:',
-  //                   {
-  //                     Ref: 'AWS::Partition',
-  //                   },
-  //                   ':dynamodb:eu-central-1:',
-  //                   {
-  //                     Ref: 'AWS::AccountId',
-  //                   },
-  //                   ':table/',
-  //                   {
-  //                     Ref: 'TableCD117FA1',
-  //                   },
-  //                 ],
-  //               ],
-  //             },
-  //             {
-  //               'Fn::Join': [
-  //                 '',
-  //                 [
-  //                   'arn:',
-  //                   {
-  //                     Ref: 'AWS::Partition',
-  //                   },
-  //                   ':dynamodb:eu-west-2:',
-  //                   {
-  //                     Ref: 'AWS::AccountId',
-  //                   },
-  //                   ':table/',
-  //                   {
-  //                     Ref: 'TableCD117FA1',
-  //                   },
-  //                   '/index/*',
-  //                 ],
-  //               ],
-  //             },
-  //             {
-  //               'Fn::Join': [
-  //                 '',
-  //                 [
-  //                   'arn:',
-  //                   {
-  //                     Ref: 'AWS::Partition',
-  //                   },
-  //                   ':dynamodb:eu-central-1:',
-  //                   {
-  //                     Ref: 'AWS::AccountId',
-  //                   },
-  //                   ':table/',
-  //                   {
-  //                     Ref: 'TableCD117FA1',
-  //                   },
-  //                   '/index/*',
-  //                 ],
-  //               ],
-  //             },
-  //           ],
-  //         },
-  //       ],
-  //       Version: '2012-10-17',
-  //     },
-  //   });
-  // });
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'dynamodb:BatchGetItem',
+              'dynamodb:GetRecords',
+              'dynamodb:GetShardIterator',
+              'dynamodb:Query',
+              'dynamodb:GetItem',
+              'dynamodb:Scan',
+              'dynamodb:ConditionCheckItem',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'TableCD117FA1',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'TableCD117FA1',
+                        'Arn',
+                      ],
+                    },
+                    '/index/*',
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:eu-west-2:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/',
+                    {
+                      Ref: 'TableCD117FA1',
+                    },
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:eu-central-1:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/',
+                    {
+                      Ref: 'TableCD117FA1',
+                    },
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:eu-west-2:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/',
+                    {
+                      Ref: 'TableCD117FA1',
+                    },
+                    '/index/*',
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:eu-central-1:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/',
+                    {
+                      Ref: 'TableCD117FA1',
+                    },
+                    '/index/*',
+                  ],
+                ],
+              },
+            ],
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
 
   // test('grantReadData across regions', () => {
   //   // GIVEN

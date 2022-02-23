@@ -303,7 +303,7 @@
           "exec": "yarn install --check-files"
         },
         {
-          "exec": "yarn upgrade @aws-cdk/aws-applicationautoscaling @aws-cdk/aws-kinesis @aws-cdk/aws-kms @types/aws-lambda @types/jest @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-sdk esbuild eslint-import-resolver-node eslint-import-resolver-typescript eslint-plugin-import eslint jest jest-junit jsii jsii-diff jsii-docgen json-schema npm-check-updates standard-version ts-jest typescript @aws-cdk/aws-dynamodb @aws-cdk/aws-iam @aws-cdk/aws-lambda @aws-cdk/core @aws-cdk/custom-resources constructs @aws-cdk/aws-dynamodb @aws-cdk/aws-iam @aws-cdk/aws-lambda @aws-cdk/core @aws-cdk/custom-resources @aws-cdk/assert @aws-cdk/assertions"
+          "exec": "yarn upgrade @aws-cdk/aws-applicationautoscaling @aws-cdk/aws-dynamodb @aws-cdk/aws-iam @aws-cdk/aws-kinesis @aws-cdk/aws-kms @aws-cdk/custom-resources @types/aws-lambda @types/jest @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-sdk esbuild eslint-import-resolver-node eslint-import-resolver-typescript eslint-plugin-import eslint jest jest-junit jsii jsii-diff jsii-docgen json-schema npm-check-updates standard-version ts-jest typescript @aws-cdk/aws-dynamodb @aws-cdk/aws-iam @aws-cdk/aws-lambda @aws-cdk/core @aws-cdk/custom-resources constructs @aws-cdk/assert @aws-cdk/assertions"
         },
         {
           "exec": "npx projen"

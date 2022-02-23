@@ -42,8 +42,11 @@
     "@aws-cdk/assert": "^1.145.0",
     "@aws-cdk/assertions": "^1.145.0",
     "@aws-cdk/aws-applicationautoscaling": "^1.145.0",
+    "@aws-cdk/aws-dynamodb": "^1.145.0",
+    "@aws-cdk/aws-iam": "^1.145.0",
     "@aws-cdk/aws-kinesis": "^1.145.0",
     "@aws-cdk/aws-kms": "^1.145.0",
+    "@aws-cdk/custom-resources": "^1.145.0",
     "@types/aws-lambda": "^8.10.92",
     "@types/jest": "^27.4.0",
     "@types/node": "^12",
@@ -74,13 +77,6 @@
     "@aws-cdk/core": "^1.145.0",
     "@aws-cdk/custom-resources": "^1.145.0",
     "constructs": "^3.2.27"
-  },
-  "dependencies": {
-    "@aws-cdk/aws-dynamodb": "^1.145.0",
-    "@aws-cdk/aws-iam": "^1.145.0",
-    "@aws-cdk/aws-lambda": "^1.145.0",
-    "@aws-cdk/core": "^1.145.0",
-    "@aws-cdk/custom-resources": "^1.145.0"
   },
   "keywords": [
     "cdk"

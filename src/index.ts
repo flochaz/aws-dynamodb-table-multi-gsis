@@ -3,7 +3,6 @@ import { ScalableTableAttribute } from '@aws-cdk/aws-dynamodb/lib/scalable-table
 import * as core from '@aws-cdk/core';
 import { DynamoDBUpdateTableProvider } from './DynamoDBUpdateTableProvider';
 
-
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
 
@@ -24,6 +23,10 @@ export class Table extends dynamodb.Table {
   private readonly _nonKeyAttributes = new Set<string>();
   private readonly _indexScaling = new Map<string, ScalableAttributePair>();
   private readonly _billingMode: dynamodb.BillingMode;
+
+  protected get hasIndex() {
+    return this.globalSecondaryIndexesBuilders.length > 0;
+  }
 
   constructor(scope: core.Construct, id: string, props: dynamodb.TableProps) {
     super(scope, id, props);
@@ -142,8 +145,6 @@ export class Table extends dynamodb.Table {
   private sdkBasedAddGlobalSecondaryIndex(
     globalSecondaryIndex: dynamodb.CfnTable.LocalSecondaryIndexProperty | dynamodb.CfnTable.GlobalSecondaryIndexProperty,
   ): core.CustomResource {
-
-    console.log(`Adding global secondary index ${globalSecondaryIndex.indexName} and ${JSON.stringify(globalSecondaryIndex.keySchema)} schema`);
     // capitalize object keys
     const capitalizedAttributeDefinitions = this._attributeDefinitions.map((def) => {
       return {
@@ -152,30 +153,29 @@ export class Table extends dynamodb.Table {
       };
     });
 
-    const capitalizedKeySchema = (globalSecondaryIndex.keySchema as dynamodb.CfnTable.KeySchemaProperty[]).map((key) => {
-      return {
-        AttributeName: key.attributeName,
-        KeyType: key.keyType,
-      };
-    });
+    const capitalizedKeySchema = (globalSecondaryIndex.keySchema as dynamodb.CfnTable.KeySchemaProperty[]).map(
+      (key) => {
+        return {
+          AttributeName: key.attributeName,
+          KeyType: key.keyType,
+        };
+      },
+    );
 
     const capitalizedProjection = {
       ProjectionType: (globalSecondaryIndex.projection as dynamodb.CfnTable.ProjectionProperty).projectionType,
     };
-    return new core.CustomResource(
-      this,
-      `${globalSecondaryIndex.indexName}`,
-      {
-        serviceToken: this.globalSecondaryIndexesBuilderProvider.provider.serviceToken,
-        resourceType: 'Custom::DynamoDBGlobalSecondaryIndex',
-        properties: {
-          TableName: this.tableName,
-          AttributeDefinitions: capitalizedAttributeDefinitions,
-          IndexName: globalSecondaryIndex.indexName,
-          KeySchema: capitalizedKeySchema,
-          Projection: capitalizedProjection,
-        },
-      });
+    return new core.CustomResource(this, `${globalSecondaryIndex.indexName}`, {
+      serviceToken: this.globalSecondaryIndexesBuilderProvider.provider.serviceToken,
+      resourceType: 'Custom::DynamoDBGlobalSecondaryIndex',
+      properties: {
+        TableName: this.tableName,
+        AttributeDefinitions: capitalizedAttributeDefinitions,
+        IndexName: globalSecondaryIndex.indexName,
+        KeySchema: capitalizedKeySchema,
+        Projection: capitalizedProjection,
+      },
+    });
   }
 
   /**

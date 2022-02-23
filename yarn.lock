@@ -209,7 +209,7 @@
     "@aws-cdk/cx-api" "1.145.0"
     constructs "^3.3.69"
 
-"@aws-cdk/aws-lambda@1.145.0", "@aws-cdk/aws-lambda@^1.145.0":
+"@aws-cdk/aws-lambda@1.145.0":
   version "1.145.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/aws-lambda/-/aws-lambda-1.145.0.tgz#9b207e9fde646fd1abfc73e60112044755a306bc"
   integrity sha512-yRuIFiVsCb+0hoaqFFyvtb77/JRtcNN1Pgip7FFaZsE5HCflMWLqGdOu1a2nPMSQB4+EvqTGyYmE4C6MXelHvw==
@@ -346,7 +346,7 @@
     string-width "^4.2.3"
     table "^6.8.0"
 
-"@aws-cdk/core@1.145.0", "@aws-cdk/core@^1.145.0":
+"@aws-cdk/core@1.145.0":
   version "1.145.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/core/-/core-1.145.0.tgz#7575c74274afff7223d02bd688ba03b0843e5a6b"
   integrity sha512-9eHDg4M/5XuFvZKRIAzXCPcyWay93gAZOZ5Fexvk5W+XcKrnP9d969RVHcFEjjQ1Kgt5130MQ7uMaHTz6Izp6w==
