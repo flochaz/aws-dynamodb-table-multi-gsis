@@ -2,7 +2,7 @@
   "dependencies": [
     {
       "name": "@aws-cdk/aws-applicationautoscaling",
-      "version": "^1.145.0",
+      "version": "^1.122.0",
       "type": "build"
     },
     {
@@ -15,12 +15,12 @@
     },
     {
       "name": "@aws-cdk/aws-kinesis",
-      "version": "^1.145.0",
+      "version": "^1.122.0",
       "type": "build"
     },
     {
       "name": "@aws-cdk/aws-kms",
-      "version": "^1.145.0",
+      "version": "^1.122.0",
       "type": "build"
     },
     {
@@ -124,27 +124,27 @@
     },
     {
       "name": "@aws-cdk/aws-dynamodb",
-      "version": "^1.145.0",
+      "version": "^1.122.0",
       "type": "peer"
     },
     {
       "name": "@aws-cdk/aws-iam",
-      "version": "^1.145.0",
+      "version": "^1.122.0",
       "type": "peer"
     },
     {
       "name": "@aws-cdk/aws-lambda",
-      "version": "^1.145.0",
+      "version": "^1.122.0",
       "type": "peer"
     },
     {
       "name": "@aws-cdk/core",
-      "version": "^1.145.0",
+      "version": "^1.122.0",
       "type": "peer"
     },
     {
       "name": "@aws-cdk/custom-resources",
-      "version": "^1.145.0",
+      "version": "^1.122.0",
       "type": "peer"
     },
     {
@@ -154,12 +154,12 @@
     },
     {
       "name": "@aws-cdk/assert",
-      "version": "^1.145.0",
+      "version": "^1.122.0",
       "type": "test"
     },
     {
       "name": "@aws-cdk/assertions",
-      "version": "^1.145.0",
+      "version": "^1.122.0",
       "type": "test"
     }
   ],

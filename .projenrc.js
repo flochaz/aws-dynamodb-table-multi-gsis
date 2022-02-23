@@ -2,7 +2,7 @@ const { awscdk } = require('projen');
 const project = new awscdk.AwsCdkConstructLibrary({
   author: 'Florian CHAZAL',
   authorAddress: 'florianchazal@gmail.com',
-  cdkVersion: '1.145.0',
+  cdkVersion: '1.122.0',
   defaultReleaseBranch: 'main',
   name: 'aws-dynamodb-table-multi-gsis',
   repositoryUrl: 'https://github.com/flochaz/aws-dynamodb-table-multi-gsis.git',
