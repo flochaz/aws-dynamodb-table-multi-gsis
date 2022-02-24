@@ -1,3 +1,9 @@
+/**
+ * Unit Tests Table with multi GSIs class
+ *
+ * @group unit
+ */
+
 import { Capture, Match, Template } from '@aws-cdk/assertions';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import {

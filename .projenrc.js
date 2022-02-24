@@ -12,11 +12,26 @@ const project = new awscdk.AwsCdkConstructLibrary({
   cdkTestDependencies: ['@aws-cdk/aws-applicationautoscaling', '@aws-cdk/aws-kinesis', '@aws-cdk/aws-kms'],
   externals: ['aws-sdk'],
   // description: undefined,          /* The description is just a string that helps people understand the purpose of the package. */
-  devDeps: ['aws-sdk', '@types/aws-lambda', '@aws-cdk/aws-dynamodb', '@aws-cdk/custom-resources', '@aws-cdk/aws-iam'],
+  devDeps: [
+    'aws-sdk',
+    '@types/aws-lambda',
+    'jest-runner-groups',
+    '@aws-cdk/aws-dynamodb',
+    '@aws-cdk/custom-resources',
+    '@aws-cdk/aws-iam',
+    'aws-cdk@^1.122.0',
+  ],
   // packageName: undefined,          /* The "name" in package.json. */
   // release: undefined,              /* Add release management to this project. */
-  gitignore: [
-    'cdk.out',
-  ],
+  gitignore: ['cdk.out'],
 });
+
+const e2e = project.addTask('test:e2e', {
+  exec: 'jest --group=e2e',
+});
+const addJestGroupSupport = 'echo $(cat package.json | jq \'.jest.runner = "groups"\') > package.json';
+e2e.prependExec(addJestGroupSupport);
+
+project.testTask.reset(`${addJestGroupSupport} && jest --group=unit`);
+
 project.synth();

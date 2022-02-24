@@ -237,10 +237,18 @@
       "description": "Run tests",
       "steps": [
         {
-          "exec": "jest --passWithNoTests --all --updateSnapshot"
+          "exec": "echo $(cat package.json | jq '.jest.runner = \"groups\"') > package.json && jest --group=unit"
+        }
+      ]
+    },
+    "test:e2e": {
+      "name": "test:e2e",
+      "steps": [
+        {
+          "exec": "echo $(cat package.json | jq '.jest.runner = \"groups\"') > package.json"
         },
         {
-          "spawn": "eslint"
+          "exec": "jest --group=e2e"
         }
       ]
     },
@@ -303,7 +311,7 @@
           "exec": "yarn install --check-files"
         },
         {
-          "exec": "yarn upgrade @aws-cdk/aws-applicationautoscaling @aws-cdk/aws-dynamodb @aws-cdk/aws-iam @aws-cdk/aws-kinesis @aws-cdk/aws-kms @aws-cdk/custom-resources @types/aws-lambda @types/jest @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-sdk esbuild eslint-import-resolver-node eslint-import-resolver-typescript eslint-plugin-import eslint jest jest-junit jsii jsii-diff jsii-docgen json-schema npm-check-updates standard-version ts-jest typescript @aws-cdk/aws-dynamodb @aws-cdk/aws-iam @aws-cdk/aws-lambda @aws-cdk/core @aws-cdk/custom-resources constructs @aws-cdk/assert @aws-cdk/assertions"
+          "exec": "yarn upgrade @aws-cdk/aws-applicationautoscaling @aws-cdk/aws-dynamodb @aws-cdk/aws-iam @aws-cdk/aws-kinesis @aws-cdk/aws-kms @aws-cdk/custom-resources @types/aws-lambda @types/jest @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk aws-sdk esbuild eslint-import-resolver-node eslint-import-resolver-typescript eslint-plugin-import eslint jest jest-junit jest-runner-groups jsii jsii-diff jsii-docgen json-schema npm-check-updates standard-version ts-jest typescript @aws-cdk/aws-dynamodb @aws-cdk/aws-iam @aws-cdk/aws-lambda @aws-cdk/core @aws-cdk/custom-resources constructs @aws-cdk/assert @aws-cdk/assertions"
         },
         {
           "exec": "npx projen"
