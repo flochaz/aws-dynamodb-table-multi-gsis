@@ -37,4 +37,6 @@ testTable.addGlobalSecondaryIndex({
 
 ## Potential caveat
 
-If the existing table already has GSIs, it will delete and recreates the GSIs ...
+If the existing table already has 
+* 1 GSI, it will delete it and recreate it with new way of managing GSIs ...
+* 2 or more GSIs, update will fail because it will try to delete those GSIs and recreate them with the new method but since it's not possible to delete more than one using the old management system the stack update will fail :( => workaround delete those GSIs from your cdk app before changing to new implementation
