@@ -6,7 +6,11 @@ const project = new awscdk.AwsCdkConstructLibrary({
   defaultReleaseBranch: 'main',
   name: 'aws-dynamodb-table-multi-gsis',
   repositoryUrl: 'https://github.com/flochaz/aws-dynamodb-table-multi-gsis.git',
-
+  jestOptions: {
+    jestConfig: {
+      runner: 'groups',
+    },
+  },
   cdkDependenciesAsDeps: false,
   cdkDependencies: ['@aws-cdk/aws-dynamodb', '@aws-cdk/custom-resources', '@aws-cdk/aws-iam'],
   cdkTestDependencies: ['@aws-cdk/aws-applicationautoscaling', '@aws-cdk/aws-kinesis', '@aws-cdk/aws-kms'],
@@ -29,9 +33,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
 const e2e = project.addTask('test:e2e', {
   exec: 'jest --group=e2e',
 });
-const addJestGroupSupport = 'echo $(cat package.json | jq \'.jest.runner = "groups"\') > package.json';
-e2e.prependExec(addJestGroupSupport);
 
-project.testTask.reset(`${addJestGroupSupport} && jest --group=unit`);
+project.testTask.reset('jest --group=unit');
 
 project.synth();

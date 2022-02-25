@@ -237,16 +237,13 @@
       "description": "Run tests",
       "steps": [
         {
-          "exec": "echo $(cat package.json | jq '.jest.runner = \"groups\"') > package.json && jest --group=unit"
+          "exec": "jest --group=unit"
         }
       ]
     },
     "test:e2e": {
       "name": "test:e2e",
       "steps": [
-        {
-          "exec": "echo $(cat package.json | jq '.jest.runner = \"groups\"') > package.json"
-        },
         {
           "exec": "jest --group=e2e"
         }
