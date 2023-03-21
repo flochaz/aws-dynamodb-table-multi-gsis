@@ -2,7 +2,7 @@ import * as iam from 'aws-cdk-lib/aws-iam'
 import * as cdk from 'aws-cdk-lib'
 import * as cr from 'aws-cdk-lib/custom-resources';
 
-import { DynamoDBUpdateTableFunction } from './dynamoDBUpdateTable-function';
+import { DynamoDBUpdateTableFunction } from './DynamoDBUpdateTableFunction';
 import { Construct } from 'constructs';
 
 // export interface DynamoDBUpdateTableProviderProps {}
