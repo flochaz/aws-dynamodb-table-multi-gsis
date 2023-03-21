@@ -5,7 +5,6 @@
     "stack-starter": "bin/stack-starter.js"
   },
   "scripts": {
-    "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
@@ -25,8 +24,8 @@
     "typescript": "~4.9.5"
   },
   "dependencies": {
-    "aws-cdk-lib": "^2.63.0",
-    "constructs": "^10.1.239",
+    "aws-cdk-lib": "^2.69.0",
+    "constructs": "^10.1.284",
     "dotenv": "^16.0.3",
     "source-map-support": "^0.5.21"
   }
