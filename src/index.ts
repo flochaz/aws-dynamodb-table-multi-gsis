@@ -1,7 +1,8 @@
-import * as dynamodb from '@aws-cdk/aws-dynamodb';
-import { ScalableTableAttribute } from '@aws-cdk/aws-dynamodb/lib/scalable-table-attribute';
-import * as core from '@aws-cdk/core';
+import * as dynamodb from 'aws-cdk-lib/aws-dynamodb'
+import * as cdk from 'aws-cdk-lib'
+import { IScalableTableAttribute } from 'aws-cdk-lib/aws-dynamodb'
 import { DynamoDBUpdateTableProvider } from './DynamoDBUpdateTableProvider';
+import { Construct } from 'constructs'
 
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
@@ -10,13 +11,13 @@ const RANGE_KEY_TYPE = 'RANGE';
  * Just a convenient way to keep track of both attributes
  */
 interface ScalableAttributePair {
-  scalableReadAttribute?: ScalableTableAttribute;
-  scalableWriteAttribute?: ScalableTableAttribute;
+  scalableReadAttribute?: IScalableTableAttribute;
+  scalableWriteAttribute?: IScalableTableAttribute;
 }
 
 export class Table extends dynamodb.Table {
   private readonly _attributeDefinitions = new Array<dynamodb.CfnTable.AttributeDefinitionProperty>();
-  private readonly globalSecondaryIndexesBuilders = new Array<core.CustomResource>();
+  private readonly globalSecondaryIndexesBuilders = new Array<cdk.CustomResource>();
   private readonly globalSecondaryIndexesBuilderProvider: DynamoDBUpdateTableProvider;
 
   private readonly _globalSecondaryIndexSchemas = new Map<string, dynamodb.SchemaOptions>();
@@ -28,7 +29,7 @@ export class Table extends dynamodb.Table {
     return this.globalSecondaryIndexesBuilders.length > 0;
   }
 
-  constructor(scope: core.Construct, id: string, props: dynamodb.TableProps) {
+  constructor(scope: Construct, id: string, props: dynamodb.TableProps) {
     super(scope, id, props);
 
     // Keep original billing mode logic
@@ -144,7 +145,7 @@ export class Table extends dynamodb.Table {
 
   private sdkBasedAddGlobalSecondaryIndex(
     globalSecondaryIndex: dynamodb.CfnTable.LocalSecondaryIndexProperty | dynamodb.CfnTable.GlobalSecondaryIndexProperty,
-  ): core.CustomResource {
+  ): cdk.CustomResource {
     // capitalize object keys
     const capitalizedAttributeDefinitions = this._attributeDefinitions.map((def) => {
       return {
@@ -165,7 +166,7 @@ export class Table extends dynamodb.Table {
     const capitalizedProjection = {
       ProjectionType: (globalSecondaryIndex.projection as dynamodb.CfnTable.ProjectionProperty).projectionType,
     };
-    return new core.CustomResource(this, `${globalSecondaryIndex.indexName}`, {
+    return new cdk.CustomResource(this, `${globalSecondaryIndex.indexName}`, {
       serviceToken: this.globalSecondaryIndexesBuilderProvider.provider.serviceToken,
       resourceType: 'Custom::DynamoDBGlobalSecondaryIndex',
       properties: {

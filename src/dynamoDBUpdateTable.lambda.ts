@@ -2,7 +2,7 @@
 import type {
   IsCompleteResponse,
   IsCompleteRequest,
-} from '@aws-cdk/custom-resources/lib/provider-framework/types';
+} from 'aws-cdk-lib/custom-resources/lib/provider-framework/types';
 import { DynamoDB } from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
 
 export async function handler(event: any): Promise<any> {

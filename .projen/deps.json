@@ -6,14 +6,6 @@
       "type": "build"
     },
     {
-      "name": "@aws-cdk/aws-dynamodb",
-      "type": "build"
-    },
-    {
-      "name": "@aws-cdk/aws-iam",
-      "type": "build"
-    },
-    {
       "name": "@aws-cdk/aws-kinesis",
       "version": "^1.122.0",
       "type": "build"
@@ -21,14 +13,6 @@
     {
       "name": "@aws-cdk/aws-kms",
       "version": "^1.122.0",
-      "type": "build"
-    },
-    {
-      "name": "@aws-cdk/custom-resources",
-      "type": "build"
-    },
-    {
-      "name": "@types/aws-lambda",
       "type": "build"
     },
     {
@@ -51,12 +35,15 @@
       "type": "build"
     },
     {
-      "name": "aws-cdk",
-      "version": "^1.122.0",
+      "name": "aws-cdk-lib",
       "type": "build"
     },
     {
       "name": "aws-sdk",
+      "type": "build"
+    },
+    {
+      "name": "constructs",
       "type": "build"
     },
     {
@@ -132,16 +119,6 @@
       "type": "build"
     },
     {
-      "name": "@aws-cdk/aws-dynamodb",
-      "version": "^1.122.0",
-      "type": "peer"
-    },
-    {
-      "name": "@aws-cdk/aws-iam",
-      "version": "^1.122.0",
-      "type": "peer"
-    },
-    {
       "name": "@aws-cdk/aws-lambda",
       "version": "^1.122.0",
       "type": "peer"
@@ -152,7 +129,7 @@
       "type": "peer"
     },
     {
-      "name": "@aws-cdk/custom-resources",
+      "name": "aws-cdk-lib",
       "version": "^1.122.0",
       "type": "peer"
     },
