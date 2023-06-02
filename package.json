@@ -1,11 +1,19 @@
 {
-  "name": "stack-starter",
+  "name": "aws-dynamodb-table-multi-gsis",
   "version": "0.1.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "bin": {
     "stack-starter": "bin/stack-starter.js"
   },
+  "author": {
+    "name": "Florian CHAZAL",
+    "email": "florianchazal@gmail.com",
+    "organization": false
+  },
   "scripts": {
-    "watch": "tsc -w",
+    "build": "npx tsc",
+    "watch": "npx tsc -w",
     "test": "jest",
     "cdk": "cdk",
     "destroy": "cdk destroy",
