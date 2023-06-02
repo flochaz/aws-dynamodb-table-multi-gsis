@@ -1,11 +1,11 @@
 #!/usr/bin/env node
-import { AttributeType, BillingMode } from '@aws-cdk/aws-dynamodb';
-import * as cdk from '@aws-cdk/core';
+import { AttributeType, BillingMode } from 'aws-cdk-lib/aws-dynamodb';
+import { App, Stack } from 'aws-cdk-lib'
 import { Table } from './';
 
-const app = new cdk.App();
+const app = new App();
 
-const stack = new cdk.Stack(app, 'integ-dynamodb-table');
+const stack = new Stack(app, 'integ-dynamodb-table');
 
 const testTable = new Table(stack, 'TestTable', {
   partitionKey: { name: 'id', type: AttributeType.STRING },
